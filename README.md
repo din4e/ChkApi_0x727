@@ -1,24 +1,21 @@
 # ChkApi - API安全检测自动化工具
 
-[![GitHub release](https://img.shields.io/github/release/0x727/ChkApi_0x727.svg)](https://github.com/0x727/ChkApi_0x727/releases)
+集成精简版，调用执行输出API资产。
 
-郑重声明：文中所涉及的技术、思路和工具仅供以安全检测、安全辅助建设为目的的学习交流使用，任何人不得将其用于非法用途以及盈利等目的，否则后果自行承担。
 
-## 0x01 介绍
+## 调用
 
-作者：[Ske](https://github.com/SkewwG)
-
-联合开发：Chhyx 
-
-团队：[0x727](https://github.com/0x727)，未来一段时间将陆续开源工具，地址：https://github.com/0x727
-
-定位：辅助甲方安全人员巡检网站资产，发现并分析API安全问题
-
-语言：python3开发
-
-功能：通过提取自动加载和静态地址中的JS和页面内容，解析Webpack打包和使用正则匹配技术，发现API接口及Base URL。针对提取的接口，通过Fuzz测试、无参和有参请求三种方式验证接口响应，进一步智能提取参数并对其进行动态测试。支持各版本Swagger解析，自动识别危险接口，结合十余种Bypass技术绕过常见限制，全面挖掘未授权访问、远程命令执行、文件上传等漏洞。所有数据统一存储至文本、Excel中，重点关注接口响应的差异性和敏感信息泄漏情况，为漏洞发现提供数据支持。
-
-调用：项目参考了[jjjjjjjjjjjjjs](https://github.com/ttstormxx/jjjjjjjjjjjjjs)的部分思路，规则借用了[HaE](https://gh0st.cn/HaE/)和[wih](https://tophanttechnology.github.io/ARL-doc/function_desc/web_info_hunter/)。感谢jjjjjjjjjjjjjs、hae和wih作者
+1. cmd 调用
+```python
+python3 ChkApi.py -u "http://example.com"
+```
+2. 内嵌代码调用
+```python
+...
+run_url(url, cookies, chrome, attackType, noApiScan)
+# run_url(url, "", "on", 0, 0)
+...
+```
 
 ## 0x02 安装
 
@@ -237,7 +234,7 @@ Base URL 可以理解为每个微服务的服务名称。在许多微服务架�
 
 Swagger和Bypass正在完善中，后续会更新上去，敬请期待。
 
-## 0x08 反馈
+## 反馈
 
 ChkApi 是一个免费且开源的项目，我们欢迎任何人为其开发和进步贡献力量。
 
@@ -249,8 +246,15 @@ ChkApi 是一个免费且开源的项目，我们欢迎任何人为其开发和�
 
 *提醒：和项目相关的问题最好在 issues 中反馈，这样方便其他有类似问题的人可以快速查找解决方法，并且也避免了我们重复回答一些问题。*
 
-## Stargazers over time
+## 声明
 
-[![Stargazers over time](https://starchart.cc/0x727/ChkApi_0x727.svg)](https://starchart.cc/0x727/ShuiZe_0x727)
+郑重声明：文中所涉及的技术、思路和工具仅供以安全检测、安全辅助建设为目的的学习交流使用，任何人不得将其用于非法用途以及盈利等目的，否则后果自行承担。
 
-<img align='right' src="https://profile-counter.glitch.me/ChkApi_0x727/count.svg" width="200">
+## 致谢
+
++ [Ske](https://github.com/SkewwG) && Chhyx 
++ [0x727](https://github.com/0x727)
++ [ttstormxx/jjjjjjjjjjjjjs](https://github.com/ttstormxx/jjjjjjjjjjjjjs)
++ [HaE](https://gh0st.cn/HaE/)
++ [wih](https://tophanttechnology.github.io/ARL-doc/function_desc/web_info_hunter/)
+  

@@ -114,6 +114,7 @@ headers_post_json = {
 
 # 打印内容并保存到日志里
 def logger_print_content(content):
+    pass # 集成的时候不输出到控制台
     print(content)
     logger.info(content)
 
