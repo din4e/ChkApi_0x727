@@ -86,7 +86,7 @@ logger = logging.getLogger('my_logger')
 
 # base url中禁止出现下面的根域名
 BLACK_DOMAIN = ['127.0.0.1']
-# base url中的host禁止出现下面的聂荣
+# base url中的host禁止出现下面的内容
 BLACK_URL = ['127.0.0.1']
 
 # 响应包禁止出现的内容
@@ -98,7 +98,7 @@ BLACK_TEXT = ['''<RecommendDoc>https://api.aliyun.com''', '''<Code>MethodNotAllo
               '"code":"HttpRequestMethodNotSupported"', '"accessErrorId"', '<status>403</status>', '"code":"AUTHX_01002"']
 
 
-webChatBotOpen = True          # 开启微信机器人
+webChatBotOpen = False          # 开启微信机器人
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36",
@@ -114,9 +114,10 @@ headers_post_json = {
 
 # 打印内容并保存到日志里
 def logger_print_content(content):
-    pass # 集成的时候不输出到控制台
-    print(content)
-    logger.info(content)
+    return 
+    # pass # 集成的时候不输出到控制台
+    # print(content)
+    # logger.info(content)
 
 
 def getCurrentTime():
