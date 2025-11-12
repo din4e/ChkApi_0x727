@@ -483,7 +483,7 @@ def run_url(url, cookies, chrome, attackType, noApiScan):
 
             # 第六步：提取参数
             # logger_print_content(f"第六步：提取参数")
-            # parameters = getParameter_api(folder_path)
+            parameters = getParameter_api(folder_path)
             # save_list_to_excel(excelSavePath, excel, '提取的所有参数', parameters)
             # with open(f'{folder_path}/6-提取的所有参数.txt', 'at', encoding='utf-8') as f, open(f'{folder_path}/所有变量列表.txt', 'at', encoding='utf-8') as f9:
             #     f9.writelines(f"parameters = {parameters}\n")

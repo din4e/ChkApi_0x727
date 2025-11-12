@@ -46,6 +46,8 @@ def create_webdriver(cookies):
         )
 
     return driver
+
+
 def check_network_url(url):
     if not url or url.count('?') > 1 or not url.startswith('http'):
         return False, ''

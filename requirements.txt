@@ -3,3 +3,4 @@ Requests
 selenium
 tldextract
 openpyxl
+playwright>=1.40.0

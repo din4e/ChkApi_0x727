@@ -17,7 +17,7 @@ from tldextract import tldextract
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import math
 import datetime
-import logging
+# import logging
 from urllib.parse import urlparse
 import threading
 import json
@@ -72,11 +72,11 @@ missingRegex=[
             {"regex":r'非法的?参数',"tag":"missing","desc":"非法参数"},
         ]
 
-# 配置日志记录器
-logging.basicConfig(filename='ChkApi.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# # 配置日志记录器
+# logging.basicConfig(filename='ChkApi.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-# 创建一个日志记录器
-logger = logging.getLogger('my_logger')
+# # 创建一个日志记录器
+# logger = logging.getLogger('my_logger')
 
 # logger.debug('这是一个调试信息')
 # logger.info('这是一个信息')
@@ -94,8 +94,8 @@ BLACK_URL = ['127.0.0.1']
 BLACK_TEXT = ['''<RecommendDoc>https://api.aliyun.com''', '''<Code>MethodNotAllowed</Code>''', '<Code>AccessDenied</Code>',
               'FAIL_SYS_API_NOT_FOUNDED::请求API不存在', '"未找到API注册信息"', '"status":400,', '"status":403', '"msg":"参数错误"',
               '"miss header param x-ca-key"', '"message":"No message available"', '"code":1003,"message":"The specified token is expired or invalid."',
-              '{"csrf":"', '"status":401,"error":"Unauthorized"', '''"Request method 'POST' not supported"''', '"error":"Internal Server Error"',
-              '"code":"HttpRequestMethodNotSupported"', '"accessErrorId"', '<status>403</status>', '"code":"AUTHX_01002"']
+              '{"csrf":"', '"status":401,"error":"Unauthorized"', '''"Request method 'POST' not supported"''', 'Internal Server Error',
+              '"code":"HttpRequestMethodNotSupported"', '"accessErrorId"', '<status>403</status>', '"code":"AUTHX_01002"','It's works']
 
 
 webChatBotOpen = False          # 开启微信机器人

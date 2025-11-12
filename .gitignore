@@ -1,2 +1,16 @@
 */__pycache__/*
 *.pyc
+
+# JS Capture Tool 输出文件
+js_capture_files/
+js_capture_cache/
+js_capture_log.txt
+js_capture_urls.txt
+
+# 构建文件
+build/
+dist/
+*.spec
+
+*.txt
+*.log

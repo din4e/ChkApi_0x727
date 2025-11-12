@@ -2,8 +2,26 @@
 
 集成精简版，调用执行输出API资产。
 
+## 工具说明
 
-## 调用
+本项目包含两个独立工具，功能互不干扰：
+
+1. **ChkApi** - API安全检测自动化工具（主工具）
+2. **JS Capture Tool** - JS文件捕获工具（独立工具，位于 `tools/` 目录）
+
+### JS Capture Tool
+
+JS文件捕获工具用于批量访问URL，捕获并下载JS文件，检测IP地址。详细使用说明请参考 [tools/README_JS_CAPTURE.md](tools/README_JS_CAPTURE.md)。
+
+快速使用：
+```bash
+# 1. 创建 js_capture_urls.txt 文件，添加要处理的URL
+# 2. 运行工具
+python tools/jsCapture.py
+```
+
+
+## ChkApi 调用
 
 1. cmd 调用
 ```python
@@ -16,6 +34,8 @@ run_url(url, cookies, chrome, attackType, noApiScan)
 # run_url(url, "", "on", 0, 0)
 ...
 ```
+
+主要关注安全和危险的API接口。
 
 ## 0x02 安装
 

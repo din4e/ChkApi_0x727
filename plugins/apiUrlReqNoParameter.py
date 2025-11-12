@@ -120,6 +120,4 @@ def apiUrlReqNoParameter_api(referer_url, api_path_urls, cookies, folder_path, f
     for t in threads:
         t.join()
 
-
     return api_url_res
-

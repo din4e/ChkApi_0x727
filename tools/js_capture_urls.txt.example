@@ -1,0 +1,5 @@
+# JS Capture Tool URL 列表
+# 每行一个 URL，以 # 开头的行为注释
+# 示例：
+http://example.com:80/
+https://example.com:443/
