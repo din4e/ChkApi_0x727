@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  chkapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chkapi:latest
+    container_name: chkapi
+    volumes:
+      # ============================================
+      # 开发模式：挂载整个项目目录（推荐用于开发）
+      # 优点：代码修改后立即生效，无需重建镜像
+      # ============================================
+      - .:/app
+      
+      # ============================================
+      # 生产模式：只挂载必要的目录（取消上面的注释，注释掉上面的 - .:/app）
+      # 优点：更安全，不会覆盖容器内的系统文件
+      # ============================================
+      # - ./plugins:/app/plugins:ro          # 插件目录（只读）
+      # - ./tools:/app/tools:ro               # 工具目录（只读）
+      # - ./js_capture_files:/app/js_capture_files      # 输出目录
+      # - ./js_capture_cache:/app/js_capture_cache       # 缓存目录
+      # - ./js_capture_urls.txt:/app/js_capture_urls.txt:ro  # URL 列表（只读）
+      # - ./js_capture_log.txt:/app/js_capture_log.txt   # 日志文件
+      
+      # ============================================
+      # 使用命名卷（可选，用于数据持久化，不依赖主机目录）
+      # ============================================
+      # - js_capture_files:/app/js_capture_files
+      # - js_capture_cache:/app/js_capture_cache
+      
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DISPLAY=:99
+    # 交互式运行（用于调试）
+    stdin_open: true
+    tty: true
+    # 默认命令（可以根据需要修改）
+    command: ["python3", "ChkApi.py", "--help"]
+    # 网络配置
+    network_mode: bridge
+    # 重启策略
+    restart: unless-stopped
+    # 资源限制（根据实际情况调整）
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+# 命名卷定义（用于数据持久化，不依赖主机文件系统）
+volumes:
+  js_capture_files:
+    driver: local
+  js_capture_cache:
+    driver: local
+

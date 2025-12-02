@@ -1,0 +1,21 @@
+version: '3.8'
+
+# 生产环境配置
+# 使用方法: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  chkapi:
+    volumes:
+      # 生产模式：只挂载必要的目录，不挂载整个项目
+      - ./plugins:/app/plugins:ro          # 插件目录（只读）
+      - ./tools:/app/tools:ro               # 工具目录（只读）
+      - ./js_capture_files:/app/js_capture_files      # 输出目录
+      - ./js_capture_cache:/app/js_capture_cache       # 缓存目录
+      - ./js_capture_urls.txt:/app/js_capture_urls.txt:ro  # URL 列表（只读）
+      - ./js_capture_log.txt:/app/js_capture_log.txt   # 日志文件
+    # 生产环境不需要交互式终端
+    stdin_open: false
+    tty: false
+    # 生产环境重启策略
+    restart: always
+

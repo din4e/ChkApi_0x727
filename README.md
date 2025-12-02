@@ -1,4 +1,4 @@
-# ChkApi - API安全检测自动化工具
+# ChkApiPlus - API安全检测自动化工具
 
 集成精简版，调用执行输出API资产。
 

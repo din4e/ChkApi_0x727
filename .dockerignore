@@ -1,0 +1,57 @@
+# Git 相关
+.git
+.gitignore
+.gitattributes
+
+# Python 相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志和缓存
+*.log
+js_capture_log.txt
+js_capture_cache/
+js_capture_files/
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# 文档和图片（可选，如果需要可以移除）
+docs/*.jpg
+*.md
+!README.md
+
+# 测试文件
+*.txt
+!requirements.txt
+!tools/js_capture_urls.txt.example
+
+# 其他
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+*.bat
+*.md
