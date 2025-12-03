@@ -10,6 +10,7 @@ js_capture_urls.txt
 # 构建文件
 build/
 dist/
+tmp/
 *.spec
 
 *.txt

@@ -15,11 +15,8 @@ JS文件捕获工具用于批量访问URL，捕获并下载JS文件，检测IP�
 
 快速使用：
 ```bash
-# 1. 创建 js_capture_urls.txt 文件，添加要处理的URL
-# 2. 运行工具
 python tools/jsCapture.py
 ```
-
 
 ## ChkApi 调用
 

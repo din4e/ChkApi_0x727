@@ -37,8 +37,9 @@ js_capture_files/
 .DS_Store
 Thumbs.db
 
-# 文档和图片（可选，如果需要可以移除）
-docs/*.jpg
+# 文档及临时文件
+docs/
+tmp/
 *.md
 !README.md
 
@@ -53,5 +54,5 @@ docs/*.jpg
 .coverage
 htmlcov/
 
+# 无用脚本
 *.bat
-*.md

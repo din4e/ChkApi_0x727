@@ -2,10 +2,10 @@ version: '3.8'
 
 services:
   chkapi:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: chkapi:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: din4e/chkapi:latest
     container_name: chkapi
     volumes:
       # ============================================
@@ -38,7 +38,7 @@ services:
     stdin_open: true
     tty: true
     # 默认命令（可以根据需要修改）
-    command: ["python3", "ChkApi.py", "--help"]
+    # command: ["python3", "ChkApi.py", "--help"]
     # 网络配置
     network_mode: bridge
     # 重启策略
