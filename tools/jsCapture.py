@@ -737,6 +737,9 @@ def signal_handler(signum, frame):
 
 async def main():
     """主函数"""
+    # 记录开始时间
+    program_start_time = time.time()
+    
     # 注册信号处理（Windows 和 Unix 都支持）
     signal.signal(signal.SIGINT, signal_handler)
     if sys.platform != 'win32':
@@ -839,6 +842,22 @@ async def main():
         concurrent=args.concurrent,
         max_concurrent=args.max_concurrent
     )
+    
+    # 计算并输出总运行时间
+    total_time = time.time() - program_start_time
+    hours = int(total_time // 3600)
+    minutes = int((total_time % 3600) // 60)
+    seconds = int(total_time % 60)
+    milliseconds = int((total_time % 1) * 1000)
+    
+    if hours > 0:
+        time_str = f"{hours}小时 {minutes}分钟 {seconds}秒"
+    elif minutes > 0:
+        time_str = f"{minutes}分钟 {seconds}秒"
+    else:
+        time_str = f"{seconds}.{milliseconds:03d}秒"
+    
+    logger.info(f"程序运行完成，总运行时间: {time_str} ({total_time:.3f} 秒)")
 
 
 if __name__ == "__main__":

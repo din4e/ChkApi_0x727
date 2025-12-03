@@ -5,7 +5,7 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: din4e/chkapi:latest
+    image: din4e/chkapi:v0.0.1
     container_name: chkapi
     volumes:
       # ============================================
@@ -34,9 +34,20 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - DISPLAY=:99
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
     # 交互式运行（用于调试）
     stdin_open: true
     tty: true
+    # Playwright 需要的安全配置
+    security_opt:
+      - seccomp=unconfined
+    cap_add:
+      - SYS_ADMIN
+    shm_size: '2gb'
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     # 默认命令（可以根据需要修改）
     # command: ["python3", "ChkApi.py", "--help"]
     # 网络配置

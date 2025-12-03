@@ -12,6 +12,8 @@ build/
 dist/
 tmp/
 *.spec
+*.zip
+*.tar.gz
 
 *.txt
 *.log

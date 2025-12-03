@@ -56,3 +56,7 @@ htmlcov/
 
 # 无用脚本
 *.bat
+
+# 压缩包 
+*.zip
+*.tar.gz

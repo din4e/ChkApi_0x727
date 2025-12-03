@@ -6,7 +6,32 @@ WORKDIR /app
 
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1 \
-    DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+# 安装 Playwright Chromium 需要的系统依赖
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+    libglib2.0-0 \
+    libnspr4 \
+    libnss3 \
+    libdbus-1-3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libexpat1 \
+    libatspi2.0-0 \
+    libx11-6 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libxcb1 \
+    libxkbcommon0 \
+    libasound2 \
+    fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
 
 # 复制依赖文件
 COPY requirements.txt .
@@ -17,7 +42,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # 安装 Playwright 浏览器（用于 jsCapture.py）
 RUN playwright install chromium && \
-    playwright install-deps chromium
+    playwright install-deps chromium || true
 
 # 复制项目文件
 COPY . .
