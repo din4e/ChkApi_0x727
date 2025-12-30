@@ -139,10 +139,74 @@ DEFAULT_CONCURRENT = 5  # 默认并发数
 class IPDetector:
     """IP 地址检测器（使用 Python 标准库 ipaddress 模块）"""
     
-    # IP 过滤规则：需要过滤的 IP 段
-    FILTERED_IP_PATTERNS = [
-        r'^2\.5\.',  # 过滤以 2.5 开头的 IP
+    # IP 过滤规则文件路径
+    FILTERED_IP_PATTERNS_FILE = "ip_filter_patterns.txt"
+    
+    # 默认 IP 过滤规则（当文件不存在时使用）
+    DEFAULT_FILTERED_IP_PATTERNS = [
+        r'^2\.5\.',      # 过滤以 2.5 开头的 IP
+        r'^127\.0\.0\.1$',  # 过滤 127.0.0.1 (localhost)
+        r'^0\.0\.0\.0$',    # 过滤 0.0.0.0 (所有接口)
     ]
+    
+    # 缓存的过滤规则（避免重复读取文件）
+    _cached_patterns = None
+    
+    @staticmethod
+    def load_filter_patterns() -> List[str]:
+        """
+        从文件加载 IP 过滤规则
+        按顺序在以下位置查找文件：
+        1. 当前工作目录
+        2. 脚本所在目录
+        3. 脚本所在目录的父目录（项目根目录）
+        
+        Returns:
+            过滤规则列表（正则表达式字符串）
+        """
+        # 如果已缓存，直接返回
+        if IPDetector._cached_patterns is not None:
+            return IPDetector._cached_patterns
+        
+        patterns = []
+        file_name = IPDetector.FILTERED_IP_PATTERNS_FILE
+        
+        # 尝试在多个位置查找文件
+        possible_paths = [
+            Path(file_name),  # 当前工作目录
+            Path(__file__).parent / file_name,  # 脚本所在目录
+            Path(__file__).parent.parent / file_name,  # 项目根目录
+        ]
+        
+        file_path = None
+        for path in possible_paths:
+            if path.exists():
+                file_path = path
+                break
+        
+        # 如果文件存在，从文件读取
+        if file_path:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        # 跳过空行和注释行
+                        if line and not line.startswith('#'):
+                            patterns.append(line)
+            except Exception as e:
+                # 使用 try-except 避免 logger 未初始化的问题
+                try:
+                    logger.warning(f"读取 IP 过滤规则文件失败: {e}，使用默认规则")
+                except:
+                    pass
+                patterns = IPDetector.DEFAULT_FILTERED_IP_PATTERNS.copy()
+        else:
+            # 文件不存在，使用默认规则
+            patterns = IPDetector.DEFAULT_FILTERED_IP_PATTERNS.copy()
+        
+        # 缓存规则
+        IPDetector._cached_patterns = patterns
+        return patterns
     
     @staticmethod
     def is_valid_ip(ip: str) -> bool:
@@ -174,7 +238,8 @@ class IPDetector:
         Returns:
             True 表示应该过滤（不显示），False 表示不过滤
         """
-        for pattern in IPDetector.FILTERED_IP_PATTERNS:
+        patterns = IPDetector.load_filter_patterns()
+        for pattern in patterns:
             if re.match(pattern, ip):
                 return True
         return False
@@ -438,7 +503,7 @@ class JSCaptureTool:
                     except:
                         pass
                 except Exception as e:
-                    error_msg = str(e).replace('\n', '.')
+                    error_msg = str(e).replace('\n', '. ')
                     logger.error(error_msg)
                 
                 # 获取页面 HTML 内容（确保页面已稳定）
@@ -547,11 +612,13 @@ class JSCaptureTool:
                             if ips:
                                 file_info["ips"] = ips
                                 for ip_info in ips:
-                                    # 使用线程安全的日志输出（多行日志需要原子性）
-                                    await self._log_safe('info',
-                                        f"URL: {url}, 文件内容包含 {ip_info['type']}: {ip_info['ip']}",
-                                        f"  └─ [{ip_info['ip']}] 上下文: {ip_info['context']}"
-                                    )
+                                    # 只输出内网 IP 的报警，外网 IP 不输出
+                                    if ip_info.get('is_internal', False):
+                                        # 使用线程安全的日志输出（多行日志需要原子性）
+                                        await self._log_safe('info',
+                                            f"URL: {url}, 文件内容包含 {ip_info['type']}: {ip_info['ip']}",
+                                            f"  └─ [{ip_info['ip']}] 上下文: {ip_info['context']}"
+                                        )
                         except Exception as e:
                             pass
                         
