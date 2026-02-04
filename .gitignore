@@ -7,6 +7,9 @@ js_capture_cache/
 js_capture_log.txt
 js_capture_urls.txt
 
+# Tools 输出文件
+output/
+
 # 构建文件
 build/
 dist/
@@ -17,3 +20,7 @@ tmp/
 
 *.txt
 *.log
+
+.claude/
+.cursor/
+.vscode/
