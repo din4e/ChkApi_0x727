@@ -10,19 +10,14 @@ try:
 except Exception as e:
     from nodeCommon import *
 
-try:
-    with open('./plugins/rule.yaml', 'r') as file:
-        hae_rule = yaml.safe_load(file)
-except Exception as e:
-    with open('./rule.yaml', 'r') as file:
-        hae_rule = yaml.safe_load(file)
+# 规则文件相对本模块解析，且显式utf-8，避免受运行目录和系统locale影响
+_RULE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-try:
-    with open('./plugins/sensitive_data_rule.yaml', 'r') as file:
-        sensitive_data_rule = yaml.safe_load(file)
-except Exception as e:
-    with open('./sensitive_data_rule.yaml', 'r') as file:
-        sensitive_data_rule = yaml.safe_load(file)
+with open(os.path.join(_RULE_DIR, 'rule.yaml'), 'r', encoding='utf-8') as file:
+    hae_rule = yaml.safe_load(file)
+
+with open(os.path.join(_RULE_DIR, 'sensitive_data_rule.yaml'), 'r', encoding='utf-8') as file:
+    sensitive_data_rule = yaml.safe_load(file)
 
 # 差异化response
 def diff_response_api(folder_path, filePath_url_info):

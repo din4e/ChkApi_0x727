@@ -95,7 +95,7 @@ BLACK_TEXT = ['''<RecommendDoc>https://api.aliyun.com''', '''<Code>MethodNotAllo
               'FAIL_SYS_API_NOT_FOUNDED::请求API不存在', '"未找到API注册信息"', '"status":400,', '"status":403', '"msg":"参数错误"',
               '"miss header param x-ca-key"', '"message":"No message available"', '"code":1003,"message":"The specified token is expired or invalid."',
               '{"csrf":"', '"status":401,"error":"Unauthorized"', '''"Request method 'POST' not supported"''', 'Internal Server Error',
-              '"code":"HttpRequestMethodNotSupported"', '"accessErrorId"', '<status>403</status>', '"code":"AUTHX_01002"','It's works']
+              '"code":"HttpRequestMethodNotSupported"', '"accessErrorId"', '<status>403</status>', '"code":"AUTHX_01002"', "It's works"]
 
 
 webChatBotOpen = False          # 开启微信机器人
