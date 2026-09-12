@@ -6,7 +6,7 @@ from plugins.nodeCommon import *
 from plugins.jsAndStaticUrlFind import *
 from plugins.apiPathFind import *
 from plugins.saveToExcel import saveToExcel
-from plugins.webdriverFind import *
+from plugins.playwrightFind import playwrightFind
 from plugins.apiUrlReqNoParameter import *
 from plugins.getParameter import *
 from plugins.apiUrlReqWithParameter import *
@@ -241,7 +241,7 @@ def deal_results(excelSavePath, excel, folder_path, filePath_url_info):
 
     return disposeResults_info
 
-def run_url(url, cookies, chrome, attackType, noApiScan):
+def run_url(url, cookies, chrome, attackType, noApiScan, deepPages=0):
     js_paths = []
     static_paths = []
 
@@ -288,12 +288,19 @@ def run_url(url, cookies, chrome, attackType, noApiScan):
     }
     parameters = []
     all_api_url_xml_json_res = []
+    # 浏览器实际调用的API请求(xhr/fetch)
+    browser_api_requests = []
 
-    # 第一步先获取该页面加载了哪些js和base url
+    # 第一步先获取该页面加载了哪些js和base url，以及页面实际调用的API请求
     if chrome == 'on':
-        logger_print_content(f"第一步:调用webdriver获取{url}加载的js和no_js url")
-        all_load_url = webdriverFind(url, cookies)
+        logger_print_content(f"第一步:调用Playwright无头浏览器获取{url}加载的js、no_js url和实际调用的API请求")
+        all_load_url, browser_api_requests = playwrightFind(url, cookies, folder_path, deepPages, filePath_url_info)
         logger_print_content(f"[*] all_load_url = {all_load_url}")
+        logger_print_content(f"[*] browser_api_requests = {browser_api_requests}")
+        # 页面实际调用的API请求直接落盘，作为最真实的API资产
+        with open(f'{folder_path}/0-浏览器实际调用的API请求列表.txt', 'at', encoding='utf-8') as f:
+            for _ in browser_api_requests:
+                f.writelines(f"{_['method']}\t{_['url']}\t{_.get('status', '')}\t{_.get('content_type', '')}\t{_.get('length', '')}\t{(_.get('post_data') or '').replace(chr(10), ' ')[:120]}\n")
     else:
         logger_print_content(f"第一步:访问{url}获取js和no_js url")
         all_load_url = indexJsFind(url, cookies)
@@ -459,7 +466,7 @@ def run_url(url, cookies, chrome, attackType, noApiScan):
             all_api_url_xml_json_res = []
             # 第五步：梳理所有API接口并访问
             logger_print_content(f"第五步：无参三种形式请求所有API接口")
-            api_url_res = apiUrlReqNoParameter_api(url, api_urls, cookies, folder_path, filePath_url_info) 
+            api_url_res = apiUrlReqNoParameter_api(url, api_urls, cookies, folder_path, filePath_url_info)
             # important!
 
 
@@ -506,11 +513,13 @@ def run_url(url, cookies, chrome, attackType, noApiScan):
                 #         f3.writelines(f"{_}\n")
                 #         all_api_url_xml_json_res.append(_)
 
+    # 第八步：处理结果
     disposeResults_info = deal_results(excelSavePath, excel, folder_path, filePath_url_info)
 
 
     getJsUrl_info = {
         "all_load_urls": all_load_url,                                   # 1-1首页自动加载的所有URL列表.txt
+        "browser_api_requests": browser_api_requests,                    # 0-浏览器实际调用的API请求列表.txt
         # "js_load_urls": js_load_urls,                                    # 1-2首页自动加载的JS_URL列表.txt
         # "no_js_load_urls": no_js_load_urls,                              # 1-3首页自动加载的属于目标的非JS_URL列表.txt
         #
@@ -548,24 +557,26 @@ def main():
             'python3 %prog -f urls.txt\n\t' \
             'python3 %prog -u http://www.xxx.com --chrome off\n\t' \
             'python3 %prog -u http://www.xxx.com --at 1\n\t' \
-            'python3 %prog -u http://www.xxx.com --na 1\n\t'
+            'python3 %prog -u http://www.xxx.com --na 1\n\t' \
+            'python3 %prog -u http://www.xxx.com --dp 5\n\t'
     parse = OptionParser(usage=usage)
     parse.add_option('-u', '--url', dest='url', type='str', help='要跑的目标url')
     parse.add_option('-c', '--cookies', dest='cookies', type='str', help='cookies')
     parse.add_option('-f', '--file', dest='file', type='str', help='file to scan')
-    parse.add_option('--chrome', dest='chrome', type='str', default='on', help='off关闭chromedriver，默认是on') #
+    parse.add_option('--chrome', dest='chrome', type='str', default='on', help='off关闭Playwright无头浏览器，默认是on') #
     parse.add_option('--at', dest='attackType', type='int', default=0, help='0 收集+探测\t1 收集\t默认是0')  # 0为收集api接口和请求API接口，1为收集API接口不请求API接口
     parse.add_option('--na', dest='noApiScan', type='int', default=0, help='不扫描API接口漏洞，1不扫描，0扫描，默认是0') # 0为js扫描，1为js+api扫描
+    parse.add_option('--dp', dest='deepPages', type='int', default=0, help='深度抓取：自动点击页面元素并爬取N个同源页面，0不开启，默认是0')
 
     options, args = parse.parse_args()
-    url, cookies, file, chrome, attackType, noApiScan = options.url, options.cookies, options.file, options.chrome, options.attackType, options.noApiScan
+    url, cookies, file, chrome, attackType, noApiScan, deepPages = options.url, options.cookies, options.file, options.chrome, options.attackType, options.noApiScan, options.deepPages
 
     if url:
-        run_url(url, cookies, chrome, attackType, noApiScan)
+        run_url(url, cookies, chrome, attackType, noApiScan, deepPages)
     elif file:
         with open(file, 'rt') as f:
             for url in f.readlines():
-                run_url(url.strip(), cookies, chrome, attackType, noApiScan)
+                run_url(url.strip(), cookies, chrome, attackType, noApiScan, deepPages)
 
 if __name__ == '__main__':
     main()

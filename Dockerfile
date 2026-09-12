@@ -40,7 +40,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# 安装 Playwright 浏览器（用于 jsCapture.py）
+# 安装 Playwright 浏览器（用于 ChkApi.py 抓取API请求和 tools/jsCapture.py）
 RUN playwright install chromium && \
     playwright install-deps chromium || true
 

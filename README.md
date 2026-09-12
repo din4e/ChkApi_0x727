@@ -39,7 +39,7 @@ run_url(url, cookies, chrome, attackType, noApiScan)
 为了避免踩坑,建议安装在如下环境中
 
 * python3.8及以上，建议VPS环境是ubuntu20，默认是python3.8。
-* 需要安装chromedriver，在build.sh里内置了安装命令（默认是Linux版本的，如果是Mac电脑则自己安装下）
+* 需要安装 Playwright 及其 Chromium 浏览器，build.sh 里内置了安装命令（Mac/Windows 手动执行 `playwright install chromium` 即可）
 
 ```
 chmod 777 build.sh
@@ -55,13 +55,28 @@ chmod 777 build.sh
 | python3 ChkApi.py -u http://www.aaa.com                 | 对单一url进行扫描                          |
 | python3 ChkApi.py -u http://www.aaa.com -c "xxxxxxxxxx" | 携带cookies对单一url进行扫描               |
 | python3 ChkApi.py -f url.txt                            | 对文件里的网站进行扫描                     |
-| python3 ChkApi.py -u http://www.aaa.com --chrome off    | off关闭chromedriver，默认是on              |
+| python3 ChkApi.py -u http://www.aaa.com --chrome off    | off关闭Playwright无头浏览器，默认是on      |
 | python3 ChkApi.py -u http://www.aaa.com --at 1          | 0 收集+探测、1 收集， 默认是0              |
 | python3 ChkApi.py -u http://www.aaa.com --na 1          | 不扫描API接口漏洞，1不扫描，0扫描，默认是0 |
+| python3 ChkApi.py -u http://www.aaa.com --dp 5          | 深度抓取：自动点击页面元素并爬取最多5个同源页面抓取API，默认0不开启 |
 
 ## 工作原理
 
 自动提取目标网站的 JS 文件和 API 接口，通过正则匹配和智能参数提取技术，全面发现安全风险。
+
+### 浏览器抓取能力（Playwright）
+
+无头浏览器访问目标时，除被动收集 js/no_js URL 外，还默认开启：
+
+- **真实 API 调用捕获**：记录页面实际发出的 xhr/fetch/websocket 请求（方法、完整URL、POST体、响应状态/类型/长度），保存到 `0-浏览器实际调用的API请求列表.txt`
+- **API 响应体落盘**：200 的 json/xml 响应存入 `response/` 目录，自动接入第八步的 HAE 规则/敏感信息扫描，直接发现未授权访问和数据泄露
+- **source map 探测**：自动请求 JS 文件对应的 `.map`，探测成功则原始源码参与 API 路径匹配，覆盖 webpack 打包站点
+- **HAR 全量流量录制**：保存到 `0-浏览器流量.har`，可用 Burp/Curl 等工具直接导入分析
+
+`--dp N` 深度模式额外开启（注意会主动产生点击和访问行为）：
+
+- **自动交互**：点击页面上的按钮/提交类元素触发隐藏 API，危险元素（退出/删除/注销等关键词）自动跳过
+- **同源路由爬取**：从 `a[href]` 收集同源页面并逐个访问抓取，覆盖多页面站点的 API
 
 ### 输出结果
 

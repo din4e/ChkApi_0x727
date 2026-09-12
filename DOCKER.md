@@ -85,8 +85,6 @@ docker-compose run --rm chkapi python3 tools/jsCapture.py --concurrent --max-con
 
 ### 包含的组件
 - Python 3.9
-- Google Chrome（最新稳定版）
-- Chromedriver
 - Playwright（含 Chromium 浏览器）
 - 所有 Python 依赖包（见 `requirements.txt`）
 
