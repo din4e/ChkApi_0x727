@@ -7,6 +7,7 @@ from plugins.jsAndStaticUrlFind import *
 from plugins.apiPathFind import *
 from plugins.saveToExcel import saveToExcel
 from plugins.playwrightFind import playwrightFind
+from plugins.unauthCheck import unauthCheck_api, normalize_api_url
 from plugins.apiUrlReqNoParameter import *
 from plugins.getParameter import *
 from plugins.apiUrlReqWithParameter import *
@@ -218,10 +219,10 @@ def save_dict_to_excel(excelSavePath, excel, title, list_dict_result):
     if list_dict_result:
         sheet.save_dict_to_excel(list_dict_result)
 
-# 第八步：处理结果
+# 第九步：处理结果
 def deal_results(excelSavePath, excel, folder_path, filePath_url_info):
-    # 第八步：处理结果
-    logger_print_content(f" 第八步：处理结果")
+    # 第九步：处理结果
+    logger_print_content(f" 第九步：处理结果")
     # 整理response结果,差异化
     disposeResults_info = disposeResults_api(folder_path, filePath_url_info)
     # with open(f'{folder_path}/所有变量列表.txt', 'at', encoding='utf-8') as f9:
@@ -290,6 +291,8 @@ def run_url(url, cookies, chrome, attackType, noApiScan, deepPages=0):
     all_api_url_xml_json_res = []
     # 浏览器实际调用的API请求(xhr/fetch)
     browser_api_requests = []
+    # 未授权访问检测结果
+    unauth_findings = []
 
     # 第一步先获取该页面加载了哪些js和base url，以及页面实际调用的API请求
     if chrome == 'on':
@@ -460,6 +463,14 @@ def run_url(url, cookies, chrome, attackType, noApiScan, deepPages=0):
         if attackType == 0:
             api_urls = api_info['api_urls']
 
+            # 浏览器实际调用的API是最真实的存活接口，直接并入无参探测队列参与重放
+            # （危险路径在apiUrlReqNoParameter里仍会被dangerApiList过滤，不会被请求）
+            for _ in browser_api_requests:
+                if _.get('resource_type') in ('xhr', 'fetch'):
+                    _u = normalize_api_url(_['url'])
+                    if _u and _u not in api_urls:
+                        api_urls.append(_u)
+
             if len(api_urls) > 200000:
                 return
             # 所有api请求的响应包
@@ -513,7 +524,13 @@ def run_url(url, cookies, chrome, attackType, noApiScan, deepPages=0):
                 #         f3.writelines(f"{_}\n")
                 #         all_api_url_xml_json_res.append(_)
 
-    # 第八步：处理结果
+    # 第八步：未授权访问对比检测（浏览器带认证响应 vs 剔除Cookie的无认证重放响应）
+    # 放在deal_results之前，UNAUTH_响应文件也能参与敏感信息/HAE扫描
+    if browser_api_requests:
+        logger_print_content(f"第八步：未授权访问对比检测")
+        unauth_findings = unauthCheck_api(url, browser_api_requests, folder_path, cookies)
+
+    # 第九步：处理结果
     disposeResults_info = deal_results(excelSavePath, excel, folder_path, filePath_url_info)
 
 
@@ -542,6 +559,7 @@ def run_url(url, cookies, chrome, attackType, noApiScan, deepPages=0):
         "all_api_url_xml_json_res": all_api_url_xml_json_res,            # 5-3-XML_JSON的API_URL无参的RESPONSE结果.txt 和 7-2-XML_JSON的API_URL有参的RESPONSE结果.txt
 
         "disposeResults_info": disposeResults_info,
+        "unauth_findings": unauth_findings,                             # 9-未授权访问检测结果.txt
     }
     with open(f'{folder_path}/所有变量列表.txt', 'at', encoding='utf-8') as f9:
         f9.writelines(f"getJsUrl_info = {getJsUrl_info}\n")
